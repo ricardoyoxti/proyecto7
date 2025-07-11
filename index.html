@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Actions Activator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .github-logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: #24292e;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: white;
+        }
+
+        h1 {
+            color: #24292e;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: #586069;
+            margin-bottom: 30px;
+            font-size: 1.2em;
+        }
+
+        .repo-info {
+            background: #f6f8fa;
+            border: 1px solid #e1e4e8;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .repo-info h3 {
+            color: #24292e;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .repo-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .detail-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e1e4e8;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #24292e;
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            color: #586069;
+            font-family: 'SFMono-Regular', Consolas, monospace;
+            font-size: 0.9em;
+        }
+
+        .workflow-section {
+            background: #fff5b7;
+            border: 1px solid #ffd33d;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .workflow-section h3 {
+            color: #744500;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+            background: #28a745;
+            color: white;
+        }
+
+        .actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 180px;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, #6f42c1, #e83e8c);
+            color: white;
+            box-shadow: 0 4px 15px rgba(111, 66, 193, 0.3);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(111, 66, 193, 0.4);
+        }
+
+        .btn-info {
+            background: linear-gradient(45deg, #17a2b8, #6610f2);
+            color: white;
+            box-shadow: 0 4px 15px rgba(23, 162, 184, 0.3);
+        }
+
+        .btn-info:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(23, 162, 184, 0.4);
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            background: linear-gradient(45deg, #28a745, #20c997);
+        }
+
+        .notification.info {
+            background: linear-gradient(45deg, #17a2b8, #6610f2);
+        }
+
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e1e4e8;
+            color: #586069;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            .repo-details {
+                grid-template-columns: 1fr;
+            }
+            
+            .actions {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="github-logo">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+            </svg>
+        </div>
+
+        <h1>GitHub Actions</h1>
+        <p class="subtitle">Activador de Workflow</p>
+
+        <div class="repo-info">
+            <h3>📁 Información del Repositorio</h3>
+            <div class="repo-details">
+                <div class="detail-item">
+                    <div class="detail-label">Usuario:</div>
+                    <div class="detail-value">ricardoyoxti</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Repositorio:</div>
+                    <div class="detail-value">proyecto6</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Workflow:</div>
+                    <div class="detail-value">deploy.yml</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Ruta:</div>
+                    <div class="detail-value">.github/workflows/</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="workflow-section">
+            <h3>
+                ⚡ Estado del Workflow
+                <span class="status-badge">Listo</span>
+            </h3>
+            <p>El workflow <strong>deploy.yml</strong> está disponible y listo para ejecutarse.</p>
+        </div>
+
+        <div class="actions">
+            <a href="https://github.com/ricardoyoxti/proyecto6/actions" 
+               class="btn btn-primary" 
+               target="_blank"
+               onclick="showNotification('Abriendo GitHub Actions...', 'info')">
+                🚀 Ejecutar Workflow
+            </a>
+            
+            <a href="https://github.com/ricardoyoxti/proyecto6/blob/main/.github/workflows/deploy.yml" 
+               class="btn btn-secondary" 
+               target="_blank"
+               onclick="showNotification('Abriendo archivo deploy.yml...', 'info')">
+                📝 Ver deploy.yml
+            </a>
+            
+            <a href="https://github.com/ricardoyoxti/proyecto6" 
+               class="btn btn-info" 
+               target="_blank"
+               onclick="showNotification('Abriendo repositorio...', 'info')">
+                📂 Ver Repositorio
+            </a>
+        </div>
+
+        <div class="footer">
+            <p>💡 <strong>Tip:</strong> Puedes activar manualmente el workflow desde la pestaña "Actions" en GitHub</p>
+            <p>🔧 Para workflows automáticos, verifica los triggers en tu archivo deploy.yml</p>
+        </div>
+    </div>
+
+    <div id="notification" class="notification"></div>
+
+    <script>
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Mostrar notificación de bienvenida
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                showNotification('¡Activador de GitHub Actions cargado correctamente!', 'success');
+            }, 1000);
+        });
+
+        // Función para simular la activación del workflow
+        function activateWorkflow() {
+            showNotification('Redirigiendo a GitHub Actions...', 'info');
+            setTimeout(() => {
+                window.open('https://github.com/ricardoyoxti/proyecto6/actions', '_blank');
+            }, 1500);
+        }
+    </script>
+</body>
+</html>
